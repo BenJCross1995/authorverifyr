@@ -4,10 +4,12 @@
 \alias{tokenise}
 \title{Tokenise a Corpus or List of Corpus Objects.}
 \usage{
-tokenise(data, ...)
+tokenise(data, remove_punct_first = FALSE, ...)
 }
 \arguments{
 \item{data}{A corpus or list of corpus object}
+
+\item{remove_punct_first}{Remove punctuation before tokenising}
 
 \item{...}{Additional arguments to quanteda tokens}
 }
