@@ -103,14 +103,16 @@ chunk_tokens <- function(data, ...){
 #'
 #' @param data A corpus or list of corpuses.
 #' @param n The number of tokens to keep
+#' @param token_type The type of token to select.
 #' @param ... Additional arguments for quanteda::tokens_select
 #'
 #' @return A corpus object
 #' @export
-select_n_tokens <- function(data, n = 500, ...){
+select_n_tokens <- function(data, n = 500, token_type = "word", ...){
 
   if(typeof(data) == "list"){
 
+    # test for different tokens count underscores
     result_x <- quanteda::tokens_select(data$x, selection = "keep", endpos = n)
 
     result_y <- quanteda::tokens_select(data$y, selection = "keep", startpos = -n)

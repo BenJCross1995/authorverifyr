@@ -4,12 +4,14 @@
 \alias{select_n_tokens}
 \title{Select a certain number of tokens from the corpus.}
 \usage{
-select_n_tokens(data, n = 500, ...)
+select_n_tokens(data, n = 500, token_type = "word", ...)
 }
 \arguments{
 \item{data}{A corpus or list of corpuses.}
 
 \item{n}{The number of tokens to keep}
+
+\item{token_type}{The type of token to select.}
 
 \item{...}{Additional arguments for quanteda::tokens_select}
 }

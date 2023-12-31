@@ -4,12 +4,22 @@
 \alias{impostor_method}
 \title{Impostor Method}
 \usage{
-impostor_method(data, remove_punct_first = TRUE, ...)
+impostor_method(
+  data,
+  remove_punct_first = TRUE,
+  num_features = 10000,
+  num_impostors = 500,
+  ...
+)
 }
 \arguments{
 \item{data}{Corpus or list of corpuses}
 
 \item{remove_punct_first}{remove punctuation before tokenising T or F}
+
+\item{num_features}{Number of features to keep}
+
+\item{num_impostors}{Number of impostor documents to select}
 
 \item{...}{Additional quanteda arguments}
 }

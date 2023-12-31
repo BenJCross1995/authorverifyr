@@ -14,4 +14,6 @@ Imports:
   future,
   future.apply,
   quanteda,
-  stringi
+  stringi,
+  lsa,
+  utils

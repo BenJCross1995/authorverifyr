@@ -10,6 +10,8 @@ character_n_grams(data, n_char = 4, ...)
 \item{data}{A corpus or list of corpuses}
 
 \item{n_char}{Number of characters in character n-gram.}
+
+\item{...}{Additional quanteda arguments.}
 }
 \value{
 tokenised character n-gram data
