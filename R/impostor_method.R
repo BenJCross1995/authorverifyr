@@ -142,10 +142,10 @@ impostor_method <- function(data, remove_punct_first = TRUE,
 
       # Once impostor similarities calculated, compare the scores
       if(all(score_x_imp <= score_x_y)){
-        score_x <- score_x + 0.01}
+        score_x <- round(score_x + 0.01, 2)}
 
       if(all(score_y_imp <= score_y_x)){
-        score_y <- score_y + 0.01}
+        score_y <- round(score_y + 0.01, 2)}
 
     }
 

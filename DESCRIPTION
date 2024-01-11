@@ -16,4 +16,6 @@ Imports:
   quanteda,
   stringi,
   lsa,
-  utils
+  utils,
+  stats,
+  dplyr
