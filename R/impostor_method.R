@@ -6,23 +6,58 @@
 #'
 #' @param data A corpus or list of corpuses
 #' @param n_char Number of characters in character n-gram.
+#' @param remove_punct_first Does the user want to remove punctuation before completing?
 #' @param ... Additional quanteda arguments.
 #'
 #' @return tokenised character n-gram data
-character_n_grams <- function(data, n_char = 4, ...){
+#' @export
+character_n_grams <- function(data, n_char = 4, remove_punct_first = TRUE, ...){
 
-  # Want to keep the words with man n_char characters and then n_grams up to n_char.
-  word_dfm <- quanteda::dfm(quanteda::tokens_select(data, max_nchar = n_char))
-  # char_dfm <- quanteda::dfm(quanteda::char_ngrams(as.character(data), n = n_char))
 
-  # Now remove any character n-grams containing spaces, denoted by _
-  # char_dfm <- quanteda::dfm_remove(char_dfm, "_", value_type = "regex")
+  # Remove the punctuation first if the user requires
+  if(remove_punct_first == TRUE){
+    data <- remove_punctuation_v1(data)
+    }
 
-  # Bind them together
-  # result <- cbind(word_dfm, char_dfm)
+  # Create the character dfm, this is needed
+  char_dfm <- quanteda::tokens(data, what = "character", remove_separators = FALSE) |>                          # Keep seperators to swap with underscores
+    quanteda::tokens_tolower() |>
+    quanteda::tokens_replace(" ", "_") |>                                                                       # Swap spaces with underscores
+    quanteda::tokens_ngrams(n = n_char, concatenator = "") |>                                                   # Combine into n-grams
+    quanteda::tokens_select("^(?:[A-Za-z0-9]+|_[A-Za-z0-9]+_)$", selection = "keep", valuetype = "regex") |>    # Keep only n-character words or text with 2 underscores one at each end
+    quanteda::tokens_split(separator = "_") |>                                                                  # Remove the underscores
+    quanteda::dfm()
 
-  result <- word_dfm
-  return(result)
+  # Now find complete words with the maximum number of characters given by the user
+  word_dfm <- quanteda::tokens(data, what = "word") |>
+    quanteda::tokens_select(max_nchar = n_char) |>
+    quanteda::dfm()
+
+  # Some features will overlap so we will need to deal with those
+  char_feats <- quanteda::featnames(char_dfm)
+  word_feats <- quanteda::featnames(word_dfm)
+  shared_feats <- intersect(char_feats, word_feats) # Overlapping features
+
+  # We create matrices of the shared features and find the position max of each position in both matrices.
+  # This is done because we might have "talk" in both but in char it could come from "talking", "talked" etc.
+  # so we keep the max value to encompass this.
+  shared_char_dfm <- quanteda::dfm_match(char_dfm, shared_feats) |>
+    as.matrix()
+
+  shared_word_dfm <- quanteda::dfm_match(word_dfm, shared_feats) |>
+    as.matrix()
+
+  # Make sure to convert back to dfm
+  shared_dfm <- quanteda::as.dfm(pmax(shared_char_dfm, shared_word_dfm))
+
+  # Create dfm's containig none of the intersecting terms
+  unique_char <- quanteda::dfm_select(char_dfm, shared_feats, selection = "remove")
+  unique_word <- quanteda::dfm_select(word_dfm, shared_feats, selection = "remove")
+
+  # Finish by binding the results back together, notice no warning.
+  result_dfm <- cbind(unique_char, unique_word, shared_dfm)
+
+  return(result_dfm)
 
   }
 
@@ -48,10 +83,22 @@ impostor_method <- function(data, remove_punct_first = TRUE,
   # In the paper the authors select n tokens, default is 500
   n_tokens <- authorverifyr::select_n_tokens(tokenised_words)
 
-  # Create X and Y
-  x <- character_n_grams(n_tokens$x)
-  y <- character_n_grams(n_tokens$y)
+  vars_x <- quanteda::docvars(n_tokens$x)
+  vars_y <- quanteda::docvars(n_tokens$y)
 
+  x <- vapply(n_tokens$x, paste, FUN.VALUE = character(1), collapse = " ") |>
+    quanteda::corpus()
+  quanteda::docvars(x) <- vars_x
+
+  y <- vapply(n_tokens$y, paste, FUN.VALUE = character(1), collapse = " ") |>
+    quanteda::corpus()
+  quanteda::docvars(y) <- vars_y
+
+  # Create X and Y
+  x <- character_n_grams(x)
+  y <- character_n_grams(y)
+
+  print("Done")
   # Get the top features
   top_feats <- sort(quanteda::featfreq(rbind(x, y)), decreasing = TRUE) |>
     utils::head(num_features) |>

@@ -7,12 +7,14 @@
 #' @param loc Location of the
 #'
 #' @return A vector containing the available metrics
-#' @export
-available_metrics <- function(loc = "./R/metrics.R"){
+available_metrics_trial <- function(loc = "metrics.R"){
+
+  location <- paste0(system.file(package = "authorverifyr"), "/R/", loc)
+
   temp_env <- new.env()
 
   # Source the script into the temporary environment
-  source(loc, local = temp_env)
+  source(location, local = temp_env)
 
   # Get all objects from the temporary environment
   all_objects <- ls(temp_env)
@@ -27,6 +29,20 @@ available_metrics <- function(loc = "./R/metrics.R"){
   # Turn into vector and filter out this function.
   function_names <- as.vector(function_names[!sapply(function_names, is.null)])
   function_names <- function_names[!function_names == "available_metrics"]
+
+  return(function_names)
+}
+
+#' Get available performance metrics for use with other functions
+#'
+#' @return A vector containing the available metrics
+#' @export
+available_metrics <- function(){
+
+  # Update this manually when new metric added or removed.
+  function_names <- c('TP', 'TN', 'FP', 'FN',
+                      'accuracy', 'precision', 'recall', 'specificity',
+                      'F1', 'F1PAN', 'F0.5u', 'cat1')
 
   return(function_names)
 }

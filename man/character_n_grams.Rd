@@ -4,12 +4,14 @@
 \alias{character_n_grams}
 \title{Create character n-grams. n characters no spaces or words <= n characters long.}
 \usage{
-character_n_grams(data, n_char = 4, ...)
+character_n_grams(data, n_char = 4, remove_punct_first = TRUE, ...)
 }
 \arguments{
 \item{data}{A corpus or list of corpuses}
 
 \item{n_char}{Number of characters in character n-gram.}
+
+\item{remove_punct_first}{Does the user want to remove punctuation before completing?}
 
 \item{...}{Additional quanteda arguments.}
 }

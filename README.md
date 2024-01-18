@@ -1,7 +1,3 @@
----
-bibliography: references.bib
----
-
 # authorverifyr
 
 ----THIS PACKAGE IS IN DEVELOPMENT AND IS THE WORK OF A PHD PROJECT----
@@ -29,11 +25,11 @@ There are several major features within the package, each of these features has 
 
 #### Unmasking
 
-This method is based on The Unmasking Method first introduced by Koppel and Schler in 2004 [@koppelAuthorshipVerificationOneclass2004a].
+This method is based on The Unmasking Method first introduced by Koppel and Schler in 2004.
 
 #### The Impostor Method
 
-This method is based on The Impostor Method first introduced by Koppel and Winter in 2014 [@koppelDeterminingIfTwo2014].
+This method is based on The Impostor Method first introduced by Koppel and Winter in 2014.
 
 ### Similarity Measures
 

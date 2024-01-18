@@ -2,16 +2,13 @@
 % Please edit documentation in R/metrics.R
 \name{available_metrics}
 \alias{available_metrics}
-\title{Get available performance metrics}
+\title{Get available performance metrics for use with other functions}
 \usage{
-available_metrics(loc = "./R/metrics.R")
-}
-\arguments{
-\item{loc}{Location of the}
+available_metrics()
 }
 \value{
 A vector containing the available metrics
 }
 \description{
-Get available performance metrics
+Get available performance metrics for use with other functions
 }
