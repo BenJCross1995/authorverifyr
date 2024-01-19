@@ -77,28 +77,14 @@ impostor_method <- function(data, remove_punct_first = TRUE,
 
   # We tokenise the corpus, removing punctuation first if user desires
   tokenised_words <- authorverifyr::tokenise(data, remove_punct_first = remove_punct_first)
-  # tokenised_chars <- authorverifyr::tokenise(data, what = "character",
-  #                                            remove_punct_first = remove_punct_first)
 
   # In the paper the authors select n tokens, default is 500
   n_tokens <- authorverifyr::select_n_tokens(tokenised_words)
 
-  vars_x <- quanteda::docvars(n_tokens$x)
-  vars_y <- quanteda::docvars(n_tokens$y)
-
-  x <- vapply(n_tokens$x, paste, FUN.VALUE = character(1), collapse = " ") |>
-    quanteda::corpus()
-  quanteda::docvars(x) <- vars_x
-
-  y <- vapply(n_tokens$y, paste, FUN.VALUE = character(1), collapse = " ") |>
-    quanteda::corpus()
-  quanteda::docvars(y) <- vars_y
-
   # Create X and Y
-  x <- character_n_grams(x)
-  y <- character_n_grams(y)
+  x <- character_n_grams(n_tokens$x)
+  y <- character_n_grams(n_tokens$y)
 
-  print("Done")
   # Get the top features
   top_feats <- sort(quanteda::featfreq(rbind(x, y)), decreasing = TRUE) |>
     utils::head(num_features) |>
@@ -114,9 +100,10 @@ impostor_method <- function(data, remove_punct_first = TRUE,
   }
 
   # Inititalise the dataframe
-  result <- data.frame(matrix(ncol = 7, nrow = 0))
   col_names_result <- c("id", "author_x", "author_y", "same_author",
                         "score_x", "score_y", "score")
+  result <- data.frame(matrix(ncol = length(col_names_result), nrow = 0))
+
   colnames(result) <- col_names_result
 
   # Repeat this process for every document in X and Y.

@@ -112,11 +112,24 @@ select_n_tokens <- function(data, n = 500, token_type = "word", ...){
 
   if(typeof(data) == "list"){
 
+    vars_x <- quanteda::docvars(data$x)
+    vars_y <- quanteda::docvars(data$y)
+
     # test for different tokens count underscores
     result_x <- quanteda::tokens_select(data$x, selection = "keep", endpos = n)
 
     result_y <- quanteda::tokens_select(data$y, selection = "keep", startpos = -n)
 
+    # We want to convert the results back into a corpus, pasting the tokens together first before readding docvars
+    result_x <- vapply(result_x, paste, FUN.VALUE = character(1), collapse = " ") |>
+      quanteda::corpus()
+    quanteda::docvars(result_x) <- vars_x
+
+    result_y <- vapply(result_y, paste, FUN.VALUE = character(1), collapse = " ") |>
+      quanteda::corpus()
+    quanteda::docvars(result_y) <- vars_y
+
+    # Combine the results
     result <- list('x' = result_x, 'y' = result_y)
   } else {
 
