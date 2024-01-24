@@ -85,6 +85,8 @@ impostor_method <- function(data, remove_punct_first = TRUE,
   x <- character_n_grams(n_tokens$x)
   y <- character_n_grams(n_tokens$y)
 
+  print("Tokenisation Complete!")
+
   # Get the top features
   top_feats <- sort(quanteda::featfreq(rbind(x, y)), decreasing = TRUE) |>
     utils::head(num_features) |>
@@ -106,10 +108,18 @@ impostor_method <- function(data, remove_punct_first = TRUE,
 
   colnames(result) <- col_names_result
 
+  increment <- nrow(x) / 10
+
   # Repeat this process for every document in X and Y.
   for(i in 1:nrow(x)){
 
-    print(paste0("Document: ", i))
+    if (i %% increment == 0) {
+      # Calculate the percentage completed
+      percentage <- (i / nrow(x)) * 100
+      # Print the message
+      print(paste(percentage, "% Complete", sep=""))
+    }
+
     chosen_x <- x[i,]
     chosen_y <- y[i,]
 
@@ -119,11 +129,12 @@ impostor_method <- function(data, remove_punct_first = TRUE,
     author_y <- quanteda::docvars(chosen_y, 'author')
     same_author <- ifelse(author_x == author_y, TRUE, FALSE)
 
-    # Create the impostor dataframes making sure to remove the current id
-    impostor_x <- quanteda::dfm_subset(x, x$id != chosen_id) |>
+    # Create the impostor dataframes making sure to remove the current id and make sure to remove
+    # the same author from both.
+    impostor_x <- quanteda::dfm_subset(x, !(x$id == chosen_id | x$author == author_y)) |>
       quanteda::dfm_sample(num_impostors)
 
-    impostor_y <- quanteda::dfm_subset(y, y$id != chosen_id) |>
+    impostor_y <- quanteda::dfm_subset(y, !(y$id == chosen_id | y$author == author_x)) |>
       quanteda::dfm_sample(num_impostors)
 
     # Initialise the scores
